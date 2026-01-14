@@ -1,0 +1,17 @@
+apiVersion: helm.hops.ops.com.ai/v1alpha1
+kind: Dragonfly
+metadata:
+  name: dragonfly
+  namespace: example-env
+spec:
+  clusterName: example-cluster
+  namespace: dragonfly
+  labels:
+    team: platform
+    environment: staging
+  values:
+    replicaCount: 3
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"

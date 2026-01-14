@@ -1,0 +1,41 @@
+# code: language=yaml
+#
+# Helm release for Dragonfly
+#
+# Dragonfly is a modern Redis-compatible in-memory datastore that is
+# multi-threaded, memory-efficient, and designed for modern hardware.
+#
+
+{{- $df := $state.dragonfly }}
+
+---
+apiVersion: helm.m.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: {{ $df.releaseName }}
+  annotations:
+    {{ setResourceNameAnnotation "helm-release-dragonfly" }}
+  labels: {{ $df.labels | toJson }}
+spec:
+  managementPolicies: {{ $df.managementPolicies | toJson }}
+  forProvider:
+    chart:
+      name: dragonfly
+      repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+      version: v1.36.0
+    namespace: {{ $df.namespace }}
+    {{- if $df.overrideAllValues }}
+    values:
+      {{- toYaml $df.overrideAllValues | nindent 6 }}
+    {{- else }}
+    values:
+      # Default configuration for simple single-instance deployment
+      replicaCount: 1
+      {{- if $df.values }}
+      {{- toYaml $df.values | nindent 6 }}
+      {{- end }}
+    {{- end }}
+  rollbackLimit: 3
+  providerConfigRef:
+    name: {{ $df.providerConfigRef.name }}
+    kind: {{ $df.providerConfigRef.kind }}

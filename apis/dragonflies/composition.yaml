@@ -1,0 +1,16 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: dragonflies.helm.hops.ops.com.ai
+spec:
+  compositeTypeRef:
+    apiVersion: helm.hops.ops.com.ai/v1alpha1
+    kind: Dragonfly
+  mode: Pipeline
+  pipeline:
+  - functionRef:
+      name: hops-ops-helm-dragonflyrender
+    step: render
+  - functionRef:
+      name: crossplane-contrib-function-auto-ready
+    step: crossplane-contrib-function-auto-ready
